@@ -7,7 +7,7 @@ import json
 datafile = "debug20.json"
 
 user = 'postgres'
-# password = ''
+password = 'recipes'
 host = 'localhost'
 dbname = 'food'
 dbstring = 'postgresql://' + user + ':' + password + '@' + host + '/' + dbname
@@ -16,19 +16,41 @@ dbstring = 'postgresql://' + user + ':' + password + '@' + host + '/' + dbname
 def fetchjson():
 	with open(datafile) as f:
 		lines = [json.loads(line) for line in f]
-		# print lines[0]['ingredients']
 		print len(lines), 'records read'
-		print lines[0]
 		return lines
 
 
 def populate(records):
 	print len(records), 'records to populate'
+	tables = tables_from_recs(records)
+	recipes, ingredients, quantities, rec_ingr = tables
+	# print ingredients
 	db = create_engine(dbstring)
 	metadata = MetaData(db)
-	recipes = Table("recipes", metadata, autoload=True)
-	run(recipes.select())
+	recip_table = Table("recipes", metadata, autoload=True)
+	insert = recip_table.insert()
+	for recip in recipes:
+		insert.execute(recip)
+	# run(recipes.select())
+	ingred_table = Table('ingredients', metadata, autoload=True)
+	insert = ingred_table.insert()
+	for ingred in ingredients:
+		insert.execute({'name':ingred})
 
+
+good_fields = ['name', 'description', 'url', 'image', 'source']
+
+def tables_from_recs(records):
+	recipes, ingredients, quantities, rec_ingr = [], [], [], []
+	ingredients = [rec['ingredients'] for rec in records]
+	for rec in records:
+		nrec = {field: rec[field] for field in good_fields}
+		if rec.get('recipeYield') is not None:
+			nrec['recipeyield'] = rec['recipeYield']
+		# TODO add date and times
+		# print [nrec]
+		recipes.append(nrec)
+	return recipes, ingredients, quantities, rec_ingr
 
 
 def run(stmt):
