@@ -79,28 +79,21 @@ def get_recip_list(recipes):
         rec['dbid'] = -1
     return recipes
 
+def insert_names(name_dict, tablename):
+    metadata = MetaData(db)
+    table = Table(tablename, metadata, autoload=True)
+    insert = table.insert()
+    new_name_dict = {}
+    for name in name_dict:
+        idd = insert.execute({'name':name}).inserted_primary_key
+        new_name_dict[name] = idd[0]
+    return new_name_dict
 
 def insert_ingreds(ingred_dict):
-    metadata = MetaData(db)
-    ingred_table = Table('ingredients', metadata, autoload=True)
-    insert = ingred_table.insert()
-    new_ingred_dict = {}
-    for ingred in ingred_dict:
-        idd = insert.execute({'name':ingred}).inserted_primary_key
-        new_ingred_dict[ingred] = idd[0]
-    return new_ingred_dict
-
+    return insert_names(ingred_dict, 'ingredients')
 
 def insert_quants(quant_dict):
-    metadata = MetaData(db)
-    quant_table = Table("quantities", metadata, autoload=True)
-    insert = quant_table.insert()
-    new_quant_dict = {}
-    for quant in quant_dict:
-        idd = insert.execute({'name': quant}).inserted_primary_key
-        new_quant_dict[quant] = idd[0]
-    return new_quant_dict
-
+    return insert_names(quant_dict, 'quantities')
 
 def insert_recips(recip_list):
     metadata = MetaData(db)
