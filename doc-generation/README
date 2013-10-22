@@ -1,0 +1,2 @@
+java -jar schemaSpy_5.0.0.jar -t pgsql -host localhost -db food -o out -u postgres -p recipes -dp postgresql-9.1-903.jdbc3.jar -s public
+
