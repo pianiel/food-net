@@ -35,8 +35,8 @@ CREATE TABLE recipes_ingredients (
     quantity_count float
 );
 
-insert into recipes (name, description, url, image, source, date_published, recipeyield, total_time, cook_time, prep_time) values ('glass of water', 'just glass of water', 'www.water.com','www.water.com','www.water.com','2010-10-10',1,1,0,1);
-insert into ingredients (name) values ('water');
-insert into quantities (name) values ('glass');
-insert into recipes_ingredients (recipe_id, ingredient_id, quantity_id, quantity_count) values (1, 1, 1, 1.0);
+-- insert into recipes (name, description, url, image, source, date_published, recipeyield, total_time, cook_time, prep_time) values ('glass of water', 'just glass of water', 'www.water.com','www.water.com','www.water.com','2010-10-10',1,1,0,1);
+-- insert into ingredients (name) values ('water');
+-- insert into quantities (name) values ('glass');
+-- insert into recipes_ingredients (recipe_id, ingredient_id, quantity_id, quantity_count) values (1, 1, 1, 1.0);
 
