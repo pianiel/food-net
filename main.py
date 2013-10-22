@@ -125,7 +125,7 @@ def insert_recip_ingreds(recip_ingred_list):
     for recip_ingred in recip_ingred_list:
         insert.execute(recip_ingred)
 
-def do_work():
+def populate():
     # -pobierz dane w formacie json z pliku
     records = fetchjson()
 
@@ -155,9 +155,7 @@ def do_work():
 
 
 if __name__ == '__main__':
-    # records = fetchjson()
-    # populate(records)
     print "hello"
     depopulate()
-    do_work()
+    populate()
 
