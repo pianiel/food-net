@@ -7,6 +7,7 @@ import json
 
 
 datafile = "debug20.json"
+# datafile = "recipeitems-latest.json"
 
 user = 'postgres'
 password = 'recipes'
@@ -37,7 +38,7 @@ def tables_from_recs(records):
     quantities = ['glass']
     for rec in records:
         good_fields = ['name', 'description', 'url', 'image', 'source']
-        nrec = {field: rec[field] for field in good_fields}
+        nrec = {field: rec[field] for field in good_fields if field in rec}
         try:
             nrec['ing_list'] = parse_ing_list(rec['ingredients'])
             if int(rec.get('recipeYield')):
