@@ -4,7 +4,7 @@
 
 from sqlalchemy import *
 import json
-
+import re
 
 datafile = "debug20.json"
 #datafile = "recipeitems-latest.json"
@@ -31,6 +31,21 @@ def depopulate():
         delete = table.delete()
         delete.execute()
 
+def parse_single_time(input):
+    unit = input[len(input)-1]
+    value = int(re.findall('[0-9]+',input)[0])
+    if unit == 'S':
+        return value
+    elif unit == 'M':
+        return value*60
+    elif unit == 'H':
+        return value*60*60
+
+def parse_time(input):
+    seconds = 0
+    for time in re.findall('[0-9]+[A-Z]+',input):
+        seconds = seconds + parse_single_time(time)
+    return seconds
 
 def tables_from_recs(records):
     recipes, ingredients, quantities, categories = [], [], [], []
@@ -43,17 +58,24 @@ def tables_from_recs(records):
             pass
         good_fields = ['name', 'description', 'url', 'image', 'source']
         nrec = {field: rec[field] for field in good_fields if field in rec}
-        if rec.get('recipeCategory'):
-            nrec['category_id'] = rec['recipeCategory']
         try:
             nrec['ing_list'] = parse_ing_list(rec['ingredients'])
             if int(rec.get('recipeYield')):
                 nrec['recipeyield'] = rec['recipeYield']
         except (TypeError, ValueError) as e:
             pass
-        # TODO add date and times
-        # print [nrec]
+        if rec.get('recipeCategory'):
+            nrec['category_id'] = rec['recipeCategory']
+        if rec.get('datePublished'):
+            nrec['date_published'] = rec['datePublished']
+        if rec.get('cookTime'):
+            nrec['cook_time'] = parse_time(rec['cookTime'])
+        if rec.get('prepTime'):
+            nrec['prep_time'] = parse_time(rec['prepTime'])
+        if rec.get('totalTime'):
+            nrec['total_time'] = parse_time(rec['totalTime'])
         recipes.append(nrec)
+        # print [nrec]
     return recipes, ingredients, quantities, categories
 
 
