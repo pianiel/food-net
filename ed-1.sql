@@ -2,9 +2,26 @@ DROP TABLE IF EXISTS recipes_ingredients;
 DROP TABLE IF EXISTS recipes;
 DROP TABLE IF EXISTS ingredients;
 DROP TABLE IF EXISTS quantities;
+DROP TABLE IF EXISTS categories;
+
+CREATE TABLE ingredients (
+    id bigserial primary key,
+    name text
+);
+
+CREATE TABLE quantities (
+    id bigserial primary key,
+    name text
+);
+
+CREATE TABLE categories (
+    id bigserial primary key,
+    name text
+);
 
 CREATE TABLE recipes (
     id bigserial primary key,
+    category_id bigint references categories,
     name text,
     description text,
     url text,
@@ -15,16 +32,6 @@ CREATE TABLE recipes (
     total_time int,
     prep_time int,
     cook_time int
-);
-
-CREATE TABLE ingredients (
-    id bigserial primary key,
-    name text
-);
-
-CREATE TABLE quantities (
-    id bigserial primary key,
-    name text
 );
 
 CREATE TABLE recipes_ingredients (

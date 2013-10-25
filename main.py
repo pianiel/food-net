@@ -7,7 +7,7 @@ import json
 
 
 datafile = "debug20.json"
-# datafile = "recipeitems-latest.json"
+#datafile = "recipeitems-latest.json"
 
 user = 'postgres'
 password = 'recipes'
@@ -33,12 +33,18 @@ def depopulate():
 
 
 def tables_from_recs(records):
-    recipes, ingredients, quantities = [], [], []
+    recipes, ingredients, quantities, categories = [], [], [], []
     ingredients = [rec['ingredients'] for rec in records]
     quantities = ['glass']
     for rec in records:
+        try:
+            categories.append(rec['recipeCategory'])
+        except (KeyError) as e:
+            pass
         good_fields = ['name', 'description', 'url', 'image', 'source']
         nrec = {field: rec[field] for field in good_fields if field in rec}
+        if rec.get('recipeCategory'):
+            nrec['category_id'] = rec['recipeCategory']
         try:
             nrec['ing_list'] = parse_ing_list(rec['ingredients'])
             if int(rec.get('recipeYield')):
@@ -48,7 +54,7 @@ def tables_from_recs(records):
         # TODO add date and times
         # print [nrec]
         recipes.append(nrec)
-    return recipes, ingredients, quantities
+    return recipes, ingredients, quantities, categories
 
 
 def run(stmt):
@@ -60,23 +66,14 @@ def parse_ing_list(ingredients):
     # return list of tuples: [("flour", "cup", 1.5), ("water", "oz", 20.0)]
     return [(ingredients, 'glass', 1.0)]
 
+def get_dict(table):
+    table_set = set(table)
+    return {i: -1 for i in table_set}
 
-def get_ingred_dict(ingredients):
-    ing_set = set()
-    for ing_list in ingredients:
-        # for ing in ing_list:
-        ing_set.add(ing_list)
-    return {i: -1 for i in ing_set}
-
-def get_quant_dict(quantities):
-    quant_set = set()
-    for quant_list in quantities:
-        # for quant in quant_list:
-        quant_set.add(quant_list)
-    return {q: -1 for q in quant_set}
-
-def get_recip_list(recipes):
+def get_recip_list(recipes, cat_dict):
     for rec in recipes:
+        if rec.get('category_id') is not None:
+            rec['category_id'] = cat_dict[rec['category_id']]
         rec['dbid'] = -1
     return recipes
 
@@ -89,12 +86,6 @@ def insert_names(name_dict, tablename):
         idd = insert.execute({'name':name}).inserted_primary_key
         new_name_dict[name] = idd[0]
     return new_name_dict
-
-def insert_ingreds(ingred_dict):
-    return insert_names(ingred_dict, 'ingredients')
-
-def insert_quants(quant_dict):
-    return insert_names(quant_dict, 'quantities')
 
 def insert_recips(recip_list):
     metadata = MetaData(db)
@@ -131,22 +122,29 @@ def populate():
     records = fetchjson()
 
     tables = tables_from_recs(records)
-    recipes, ingredients, quantities = tables
+
+    recipes, ingredients, quantities, categories = tables
+
+    # -wyznacz zbiór różnych categories
+    cat_dict = get_dict(categories)
+    # -insert categories po kolei, z zapisaniem przy nich id wstawionego elementu
+    cat_dict = insert_names(cat_dict,"categories")
 
     # -wyznacz zbiór różnych ingredients
-    ingred_dict = get_ingred_dict(ingredients)
-    # -wyznacz zbiór różnych quantities
-    quant_dict = get_quant_dict(quantities)
-    # -wyznacz zbiór różnych przepisów
-    recip_list = get_recip_list(recipes)
-
+    ingred_dict = get_dict(ingredients)
     # -insert ingredientów po kolei, z zapisaniem przy nich id wstawionego elementu
-    ingred_dict = insert_ingreds(ingred_dict)
+    ingred_dict = insert_names(ingred_dict,"ingredients")
+
+    # -wyznacz zbiór różnych quantities
+    quant_dict = get_dict(quantities)
     # -insert quantities po kolei, z zapisaniem przy nich id wstawionego elementu
-    quant_dict = insert_quants(quant_dict)
+    quant_dict = insert_names(quant_dict,"quantities")
+
+    # -wyznacz zbiór różnych przepisów
+    recip_list = get_recip_list(recipes, cat_dict)
     # -insert przepisow po kolei, z zapisaniem przy nich id wstawionego
     recip_list = insert_recips(recip_list)
-
+    
     # -dla każdego przepisu, przejechanie po ingredientach i quantities i zastapienie ich przez odpowiednie id
     recip_ingreds = get_recip_ingreds(ingred_dict, quant_dict, recip_list)
     # -insert takich struktur do recip_ingred
