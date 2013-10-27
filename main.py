@@ -21,12 +21,12 @@ def fetchjson():
     with open(datafile) as f:
         lines = [json.loads(line) for line in f]
         print len(lines), 'recipes read'
-        return lines
+        return lines #[:1]
 
 
 def depopulate():
     metadata = MetaData(db)
-    for tablename in ['recipes_ingredients', 'recipes', 'ingredients', 'quantities']:
+    for tablename in ['recipes_ingredients', 'recipes', 'ingredients', 'quantities', 'categories']:
         table = Table(tablename, metadata, autoload=True)
         delete = table.delete()
         delete.execute()
@@ -84,7 +84,9 @@ def run(stmt):
     for row in rs:
         print row
 
+
 def parse_ing_list(ingredients):
+    ing_list = [ing.strip() for ing in ingredients.split('\n')]
     # return list of tuples: [("flour", "cup", 1.5), ("water", "oz", 20.0)]
     return [(ingredients, 'glass', 1.0)]
 
@@ -176,7 +178,8 @@ def populate():
 
 
 if __name__ == '__main__':
-    print "hello"
+    print "depopulating"
     depopulate()
+    print "populating"
     populate()
 
