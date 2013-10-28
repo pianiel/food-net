@@ -73,7 +73,9 @@ def tables_from_recs(records):
         if rec.get('recipeCategory'):
             nrec['category_id'] = rec['recipeCategory']
         if rec.get('datePublished'):
-            nrec['date_published'] = rec['datePublished']
+            dates = re.findall('\d\d\d\d-\d\d-\d\d', rec['datePublished'])
+            if len (dates) > 0:
+                nrec['date_published'] = dates[0]
         if rec.get('cookTime'):
             nrec['cook_time'] = parse_time(rec['cookTime'])
         if rec.get('prepTime'):
