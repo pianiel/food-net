@@ -5,9 +5,10 @@
 from sqlalchemy import *
 import json
 import re
+from analyse_ingredients import *
 
-datafile = "debug20.json"
-#datafile = "recipeitems-latest.json"
+#datafile = "debug20.json"
+datafile = "recipeitems-latest.json"
 
 user = 'postgres'
 password = 'recipes'
@@ -40,6 +41,7 @@ def parse_single_time(input):
         return value*60
     elif unit == 'H':
         return value*60*60
+    return 0
 
 def parse_time(input):
     seconds = 0
@@ -49,8 +51,8 @@ def parse_time(input):
 
 def tables_from_recs(records):
     recipes, ingredients, quantities, categories = [], [], [], []
-    ingredients = [rec['ingredients'] for rec in records]
-    quantities = ['glass']
+    ingredients = []
+    quantities = []
     for rec in records:
         try:
             categories.append(rec['recipeCategory'])
@@ -59,7 +61,11 @@ def tables_from_recs(records):
         good_fields = ['name', 'description', 'url', 'image', 'source']
         nrec = {field: rec[field] for field in good_fields if field in rec}
         try:
-            nrec['ing_list'] = parse_ing_list(rec['ingredients'])
+            ings_quants_counts= parse_ing_list(rec['ingredients'])
+            for entry in ings_quants_counts:
+                ingredients.append(entry[0])
+                quantities.append(entry[1])
+            nrec['ing_list'] = ings_quants_counts
             if int(rec.get('recipeYield')):
                 nrec['recipeyield'] = rec['recipeYield']
         except (TypeError, ValueError) as e:
@@ -74,6 +80,7 @@ def tables_from_recs(records):
             nrec['prep_time'] = parse_time(rec['prepTime'])
         if rec.get('totalTime'):
             nrec['total_time'] = parse_time(rec['totalTime'])
+        #print nrec
         recipes.append(nrec)
         # print [nrec]
     return recipes, ingredients, quantities, categories
@@ -86,9 +93,10 @@ def run(stmt):
 
 
 def parse_ing_list(ingredients):
-    ing_list = [ing.strip() for ing in ingredients.split('\n')]
+    return parse_ingredients([ingredients])
+    #ing_list = [ing.strip() for ing in ingredients.split('\n')]
     # return list of tuples: [("flour", "cup", 1.5), ("water", "oz", 20.0)]
-    return [(ingredients, 'glass', 1.0)]
+    #return [(ingredients, 'glass', 1.0)]
 
 def get_dict(table):
     table_set = set(table)
