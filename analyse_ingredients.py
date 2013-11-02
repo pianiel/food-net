@@ -2,6 +2,7 @@
 
 import json
 import re
+import string
 
 datafile = "debug20.json"
 #datafile = "recipeitems-latest.json"
@@ -27,6 +28,11 @@ expr_with_quants = r'(?:'+ expr +')\s+\w+'
 
 ## float regexp
 r_float = r'\d*\.?\d+'
+
+first_wash_accepted_signs = '-/.:'
+unwanted_signs = string.punctuation.translate(None, first_wash_accepted_signs)
+translation_table_1 = dict.fromkeys(map(ord, unwanted_signs), None)
+translation_table_2 = dict.fromkeys(map(ord, first_wash_accepted_signs), None)
 
 def parse_float(input):
     floats = re.findall(r_float, input)
@@ -55,6 +61,7 @@ def parse_ing_list(ingredients):
     results = []
     for ing in ingredients:
         ing = ing.lower()
+        ing = ing.translate(translation_table_1)
         if len(ing) == 0:
             continue
         #skip headers like "sauce:", "topping:", etc.
@@ -69,9 +76,11 @@ def parse_ing_list(ingredients):
         if len (full_name) == 0:
             continue
         last_quantity = full_name.split()[0]
-        name = full_name[len(last_quantity):].strip()
+        name = full_name[len(last_quantity):].strip().translate(translation_table_2)
         if name.startswith('of'):
             name = name.replace('of', '').strip()
+        if len(name) == 0:
+            continue
         for cnt in counts:
             start_index = ing.find(cnt)
             end_index = start_index + len(cnt)

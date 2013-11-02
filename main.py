@@ -7,8 +7,8 @@ import json
 import re
 from analyse_ingredients import *
 
-#datafile = "debug20.json"
-datafile = "recipeitems-latest.json"
+datafile = "debug20.json"
+#datafile = "recipeitems-latest.json"
 
 user = 'postgres'
 password = 'recipes'
