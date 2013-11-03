@@ -6,8 +6,9 @@ import string
 
 from collections import Counter
 
-datafile = "debug20.json"
 datafile = "recipeitems-latest.json"
+datafile = "debug20.json"
+datafile = "debug300.json"
 
 def fetchjson():
     with open(datafile) as f:

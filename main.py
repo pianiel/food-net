@@ -7,8 +7,9 @@ import json
 import re
 from analyse_ingredients import *
 
-datafile = "debug20.json"
-#datafile = "recipeitems-latest.json"
+# datafile = "debug20.json"
+datafile = "debug300.json"
+# datafile = "recipeitems-latest.json"
 
 user = 'postgres'
 password = 'recipes'
@@ -16,7 +17,9 @@ host = 'localhost'
 dbname = 'food'
 dbstring = 'postgresql://' + user + ':' + password + '@' + host + '/' + dbname
 
-db = create_engine(dbstring) # execution_options={'autocommit':'false'})
+db = create_engine(dbstring, execution_options={'autocommit':'false'})
+
+conn = db.connect()
 
 def fetchjson():
     with open(datafile) as f:
@@ -27,10 +30,17 @@ def fetchjson():
 
 def depopulate():
     metadata = MetaData(db)
-    for tablename in ['recipes_ingredients', 'recipes', 'ingredients', 'quantities', 'categories']:
-        table = Table(tablename, metadata, autoload=True)
-        delete = table.delete()
-        delete.execute()
+    trans = conn.begin()
+    try:
+        for tablename in ['recipes_ingredients', 'recipes', 'ingredients', 'quantities', 'categories']:
+            table = Table(tablename, metadata, autoload=True)
+            # delete = table.delete()
+            # delete.execute()
+            conn.execute(table.delete())
+        trans.commit()
+    except:
+        trans.rollback()
+        raise
 
 def parse_single_time(input):
     unit = input[len(input)-1]
@@ -113,21 +123,35 @@ def get_recip_list(recipes, cat_dict):
 
 def insert_names(name_dict, tablename):
     metadata = MetaData(db)
-    table = Table(tablename, metadata, autoload=True)
-    insert = table.insert()
     new_name_dict = {}
-    for name in name_dict:
-        idd = insert.execute({'name':name}).inserted_primary_key
-        new_name_dict[name] = idd[0]
+    trans = conn.begin()
+    try:
+        table = Table(tablename, metadata, autoload=True)
+        insert = table.insert()
+        for name in name_dict:
+            # idd = insert.execute({'name':name}).inserted_primary_key
+            idd = conn.execute(insert, {'name':name}).inserted_primary_key
+            new_name_dict[name] = idd[0]
+        trans.commit()
+    except:
+        trans.rollback()
+        raise
     return new_name_dict
 
 def insert_recips(recip_list):
     metadata = MetaData(db)
-    recip_table = Table("recipes", metadata, autoload=True)
-    insert = recip_table.insert()
-    for recip in recip_list:
-        idd = insert.execute(recip).inserted_primary_key
-        recip['dbid'] = idd[0]
+    trans = conn.begin()
+    try:
+        recip_table = Table("recipes", metadata, autoload=True)
+        insert = recip_table.insert()
+        for recip in recip_list:
+            # idd = insert.execute(recip).inserted_primary_key
+            idd = conn.execute(insert, recip).inserted_primary_key
+            recip['dbid'] = idd[0]
+        trans.commit()
+    except:
+        trans.rollback()
+        raise
     return recip_list
 
 def get_recip_ingreds(ingred_dict, quant_dict, recip_list):
@@ -146,39 +170,52 @@ def get_recip_ingreds(ingred_dict, quant_dict, recip_list):
 
 def insert_recip_ingreds(recip_ingred_list):
     metadata = MetaData(db)
-    recip_ingred_table = Table("recipes_ingredients", metadata, autoload=True)
-    insert = recip_ingred_table.insert()
-    for recip_ingred in recip_ingred_list:
-        insert.execute(recip_ingred)
+    trans = conn.begin()
+    try:
+        recip_ingred_table = Table("recipes_ingredients", metadata, autoload=True)
+        insert = recip_ingred_table.insert()
+        for recip_ingred in recip_ingred_list:
+            conn.execute(insert, recip_ingred)
+        trans.commit()
+    except:
+        trans.rollback()
+        raise
 
 def populate():
     # -pobierz dane w formacie json z pliku
+    print "reading data from json file..."
     records = fetchjson()
 
+    print "parsing recipes..."
     tables = tables_from_recs(records)
 
     recipes, ingredients, quantities, categories = tables
 
+    print "inserting categories..."
     # -wyznacz zbiór różnych categories
     cat_dict = get_dict(categories)
     # -insert categories po kolei, z zapisaniem przy nich id wstawionego elementu
     cat_dict = insert_names(cat_dict,"categories")
 
+    print "inserting ingredients..."
     # -wyznacz zbiór różnych ingredients
     ingred_dict = get_dict(ingredients)
     # -insert ingredientów po kolei, z zapisaniem przy nich id wstawionego elementu
     ingred_dict = insert_names(ingred_dict,"ingredients")
 
+    print "inserting quantities..."
     # -wyznacz zbiór różnych quantities
     quant_dict = get_dict(quantities)
     # -insert quantities po kolei, z zapisaniem przy nich id wstawionego elementu
     quant_dict = insert_names(quant_dict,"quantities")
 
+    print "inserting recipes..."
     # -wyznacz zbiór różnych przepisów
     recip_list = get_recip_list(recipes, cat_dict)
     # -insert przepisow po kolei, z zapisaniem przy nich id wstawionego
     recip_list = insert_recips(recip_list)
     
+    print "inserting recipes_ingredients..."
     # -dla każdego przepisu, przejechanie po ingredientach i quantities i zastapienie ich przez odpowiednie id
     recip_ingreds = get_recip_ingreds(ingred_dict, quant_dict, recip_list)
     # -insert takich struktur do recip_ingred
@@ -188,8 +225,8 @@ def populate():
 
 
 if __name__ == '__main__':
-    print "depopulating"
+    print "depopulating..."
     depopulate()
-    print "populating"
+    print "populating..."
     populate()
 
