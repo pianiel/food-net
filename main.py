@@ -16,7 +16,7 @@ host = 'localhost'
 dbname = 'food'
 dbstring = 'postgresql://' + user + ':' + password + '@' + host + '/' + dbname
 
-db = create_engine(dbstring)
+db = create_engine(dbstring) # execution_options={'autocommit':'false'})
 
 def fetchjson():
     with open(datafile) as f:

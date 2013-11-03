@@ -4,8 +4,10 @@ import json
 import re
 import string
 
+from collections import Counter
+
 datafile = "debug20.json"
-#datafile = "recipeitems-latest.json"
+datafile = "recipeitems-latest.json"
 
 def fetchjson():
     with open(datafile) as f:
@@ -18,6 +20,7 @@ quarter = r'(\xbc)'
 half = r'(\xbd)'
 three_quarters = r'(\xbe)'
 
+# https://www.debuggex.com/r/NNU9Mgn08HsUVN6U
 expr = r'(?:\d+[ -]?)?(?:\d+/\d+|\xbc|\xbd|\xbe)|\d*\.\d+|\d+'
 
 ## if we want to get ranges, e.g: 1/2 - 3/4
@@ -69,7 +72,7 @@ def parse_ing_list(ingredients):
             continue
         counts = re.findall(expr, ing)
         if len(counts) == 0:
-            results.append((ing.strip(), 'unknown', 1))
+            results.append((ing.strip(), u'unknown', 1))
             continue
         units_end_index = ing.find(counts[-1]) + len (counts[-1])
         full_name = ing[units_end_index:].strip()
@@ -106,7 +109,17 @@ def parse_ingredients(ings):
 def main():
     lines = fetchjson()
     ings = [line['ingredients'] for line in lines]
-    parse_ingredients(ings)
+    result = parse_ingredients(ings)
+    grouped = zip(*result)
+    # ings, quants, cnts = grouped
+    for group in grouped:
+        cnt = Counter(group)
+        for what in cnt.most_common(50):
+            print what
+        print '###'
+    # for ing, quant, cnt in result:
+    #     # print (ing, quant, cnt)
+    #     print quant.encode('utf-8')
 
 
 if __name__ == '__main__':
