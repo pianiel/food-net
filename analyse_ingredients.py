@@ -70,14 +70,35 @@ def parse_cnt(input):
     count = count + len(re.findall(quarter, input)) * 0.25
     count = count + len(re.findall(half, input)) * 0.5
     count = count + len(re.findall(three_quarters, input)) * 0.75
-    
     return count
+
+def unify_units(unit):
+    if unit in ['tsp', 'tsps', 'teaspoon', 'teaspoons', 'ts', 'sp', 'spoon']:
+        unit = u'teaspoon'
+    elif unit in ['tbsp', 'tbsps', 'tablespoon', 'tablespoons', 'tb', 'tbs']:
+        unit = u'tablespoon'
+    elif unit in ['oz', 'ozs', 'ounce', 'ounces']:
+        unit = u'oz'
+    elif unit in ['g', 'gs', 'gram', 'grams']:
+        unit = u'g'
+    elif unit in ['kg', 'kgs', 'kilogram', 'kilograms', 'kgrams', 'kgram']:
+        unit = u'kg'
+    #maybe unify plural forms later, for all units?
+    elif unit in ['dash', 'dashes']:
+        unit = u'dash'
+    elif unit in ['cup', 'cups']:
+        unit = u'cup'
+    elif unit in ['pound', 'pounds']:
+        unit = u'pound'
+    return unit
 
 def parse_ing_list(ingredients):
     results = []
     for ing in ingredients:
         ing = ing.lower()
         ing = ing.translate(translation_table_1).strip()
+        #remove all words ending with 'ed' (practically only adjectives)
+        ing = re.sub(r'\w+ed(\s|$)','',ing)
         if len(ing) == 0:
             continue
         #skip headers like "sauce:", "topping:", etc.
@@ -112,7 +133,7 @@ def parse_ing_list(ingredients):
         	# if cnt == counts[-1]:
             if 0.0 == parse_cnt(quant): #add only if quantity is not a number (happens with two following numbers i.e. 2 3 ounce oranges)
                 #print cnt_float, quant, name
-                results.append((name, quant, cnt_float))
+                results.append((name, unify_units(quant), cnt_float))
         # print counts, [ing.strip()]
     # return list of tuples: [("flour", "cup", 1.5), ("water", "oz", 20.0)]
     return results
