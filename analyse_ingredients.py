@@ -1,5 +1,7 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
+import random
 import json
 import re
 import string
@@ -7,13 +9,14 @@ import string
 from collections import Counter
 
 datafile = "recipeitems-latest.json"
-datafile = "debug20.json"
-datafile = "debug300.json"
+#datafile = "debug20.json"
+#datafile = "debug300.json"
 
 def fetchjson():
     with open(datafile) as f:
-        lines = [json.loads(line) for line in f]
+        lines = [json.loads(line.decode('ascii', 'ignore')) for line in f]
         print len(lines), 'recipes read'
+        #return random.sample(lines,100) #AWESOME for debug purposes
         return lines #[:1]
 
 
@@ -22,7 +25,7 @@ half = r'(\xbd)'
 three_quarters = r'(\xbe)'
 
 # https://www.debuggex.com/r/NNU9Mgn08HsUVN6U
-expr = r'(?:\d+[ -]?)?(?:\d+/\d+|\xbc|\xbd|\xbe)|\d*\.\d+|\d+'
+expr = r'(?:\d+[ ]?)?(?:\d+/\d+|\xbc|\xbd|\xbe)|\d*\.\d+|\d+'
 
 ## if we want to get ranges, e.g: 1/2 - 3/4
 expr = r'(?:' + expr + r')(?:\s*-\s*(?:' + expr + r'))?'
@@ -32,6 +35,8 @@ expr_with_quants = r'(?:'+ expr +')\s+\w+'
 
 ## float regexp
 r_float = r'\d*\.?\d+'
+##int regexp, to take care of i.e. '2.'
+r_int = r'\d+' 
 
 first_wash_accepted_signs = '-/.:'
 unwanted_signs = string.punctuation.translate(None, first_wash_accepted_signs)
@@ -42,15 +47,22 @@ def parse_float(input):
     floats = re.findall(r_float, input)
     if len(floats)>0:
         return float(floats[0])
+    ints = re.findall(r_int, input)
+    if len(ints)>0:
+        return int(ints[0])
     return 0.0
 
 def parse_cnt(input):
     range_index = input.find("-")
     if range_index >= 0:
         input = input [:range_index].strip()
-
-    slash_index = input.find("/")
+    
+    space_index = input.find(" ")
     count = 0.0
+    if space_index >= 0:
+        count = count + parse_float(input[:space_index].strip())
+        input = input[space_index:].strip()
+    slash_index = input.find("/")
     if slash_index >= 0:
         count = count + parse_float(input[:slash_index].strip()) / parse_float (input[slash_index:].strip())
     else:
@@ -65,7 +77,7 @@ def parse_ing_list(ingredients):
     results = []
     for ing in ingredients:
         ing = ing.lower()
-        ing = ing.translate(translation_table_1)
+        ing = ing.translate(translation_table_1).strip()
         if len(ing) == 0:
             continue
         #skip headers like "sauce:", "topping:", etc.
@@ -73,29 +85,34 @@ def parse_ing_list(ingredients):
             continue
         counts = re.findall(expr, ing)
         if len(counts) == 0:
-            results.append((ing.strip(), u'unknown', 1))
+            #very dirty data
+            #results.append((ing.strip(), u'unknown', 1))
             continue
-        units_end_index = ing.find(counts[-1]) + len (counts[-1])
-        full_name = ing[units_end_index:].strip()
+        units_end_index = ing.rfind(counts[-1]) + len (counts[-1])
+        full_name = ing[units_end_index:].translate(translation_table_2).strip()
         if len (full_name) == 0:
             continue
         last_quantity = full_name.split()[0]
-        name = full_name[len(last_quantity):].strip().translate(translation_table_2)
+        name = full_name[len(last_quantity):].strip()
         if name.startswith('of'):
             name = name.replace('of', '').strip()
         if len(name) == 0:
             continue
+        #print ing
         for cnt in counts:
             start_index = ing.find(cnt)
             end_index = start_index + len(cnt)
-            ing_tail = ing[end_index:].strip()
-            quant = ing_tail.split()[0].strip()
+            ing = ing[end_index:].strip()
+            quant = ing.translate(translation_table_2).strip().split()[0]
+            #for s in first_wash_accepted_signs:
+            #    quant = quant.split(s)[0]
             cnt_float = parse_cnt(cnt)
 
-        	# print '@ile i czego', [cnt, quant, name]
         	## if we want only the last one count-quantity pair, uncomment
         	# if cnt == counts[-1]:
-            results.append((name, quant, cnt_float))
+            if 0.0 == parse_cnt(quant): #add only if quantity is not a number (happens with two following numbers i.e. 2 3 ounce oranges)
+                #print cnt_float, quant, name
+                results.append((name, quant, cnt_float))
         # print counts, [ing.strip()]
     # return list of tuples: [("flour", "cup", 1.5), ("water", "oz", 20.0)]
     return results
@@ -115,7 +132,7 @@ def main():
     # ings, quants, cnts = grouped
     for group in grouped:
         cnt = Counter(group)
-        for what in cnt.most_common(50):
+        for what in cnt.most_common(75):
             print what
         print '###'
     # for ing, quant, cnt in result:
