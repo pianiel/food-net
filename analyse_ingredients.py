@@ -14,7 +14,7 @@ datafile = "recipeitems-latest.json"
 
 def fetchjson():
     with open(datafile) as f:
-        lines = [json.loads(line.decode('ascii', 'ignore')) for line in f]
+        lines = [json.loads(line) for line in f]#.decode('ascii', 'ignore')
         print len(lines), 'recipes read'
         #return random.sample(lines,100) #AWESOME for debug purposes
         return lines #[:1]
