@@ -151,9 +151,11 @@ def main():
     result = parse_ingredients(ings)
     grouped = zip(*result)
     # ings, quants, cnts = grouped
+    print 'Total of', len(grouped[0]), 'ingredients found'
     for group in grouped:
+        print len(set(group)), 'unique values'
         cnt = Counter(group)
-        for what in cnt.most_common(75):
+        for what in cnt.most_common(15):
             print what
         print '###'
     # for ing, quant, cnt in result:
