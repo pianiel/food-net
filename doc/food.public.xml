@@ -1,7 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<database name="food" schema="public" type="PostgreSQL - 9.1.9">
+<database name="food" schema="public" type="PostgreSQL - 9.1.10">
    <tables>
-      <table name="ingredients" numRows="21" remarks="" schema="public" type="TABLE">
+      <table name="categories" numRows="98" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('categories_id_seq'::regclass)" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="bigserial">
+            <child column="category_id" foreignKey="recipes_category_id_fkey" implied="false" onDeleteCascade="false" table="recipes"/>
+         </column>
+         <column autoUpdated="false" digits="0" id="1" name="name" nullable="true" remarks="" size="2147483647" type="text"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="categories_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+      </table>
+      <table name="ingredients" numRows="99434" remarks="" schema="public" type="TABLE">
          <column autoUpdated="true" defaultValue="nextval('ingredients_id_seq'::regclass)" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="bigserial">
             <child column="ingredient_id" foreignKey="recipes_ingredients_ingredient_id_fkey" implied="false" onDeleteCascade="false" table="recipes_ingredients"/>
          </column>
@@ -11,7 +21,7 @@
             <column ascending="true" name="id"/>
          </index>
       </table>
-      <table name="quantities" numRows="1" remarks="" schema="public" type="TABLE">
+      <table name="quantities" numRows="3487" remarks="" schema="public" type="TABLE">
          <column autoUpdated="true" defaultValue="nextval('quantities_id_seq'::regclass)" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="bigserial">
             <child column="quantity_id" foreignKey="recipes_ingredients_quantity_id_fkey" implied="false" onDeleteCascade="false" table="recipes_ingredients"/>
          </column>
@@ -21,26 +31,29 @@
             <column ascending="true" name="id"/>
          </index>
       </table>
-      <table name="recipes" numRows="25" remarks="" schema="public" type="TABLE">
+      <table name="recipes" numRows="150205" remarks="" schema="public" type="TABLE">
          <column autoUpdated="true" defaultValue="nextval('recipes_id_seq'::regclass)" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="bigserial">
             <child column="recipe_id" foreignKey="recipes_ingredients_recipe_id_fkey" implied="false" onDeleteCascade="false" table="recipes_ingredients"/>
          </column>
-         <column autoUpdated="false" digits="0" id="1" name="name" nullable="true" remarks="" size="2147483647" type="text"/>
-         <column autoUpdated="false" digits="0" id="2" name="description" nullable="true" remarks="" size="2147483647" type="text"/>
-         <column autoUpdated="false" digits="0" id="3" name="url" nullable="true" remarks="" size="2147483647" type="text"/>
-         <column autoUpdated="false" digits="0" id="4" name="image" nullable="true" remarks="" size="2147483647" type="text"/>
-         <column autoUpdated="false" digits="0" id="5" name="source" nullable="true" remarks="" size="2147483647" type="text"/>
-         <column autoUpdated="false" digits="0" id="6" name="date_published" nullable="true" remarks="" size="13" type="date"/>
-         <column autoUpdated="false" digits="0" id="7" name="recipeyield" nullable="true" remarks="" size="10" type="int4"/>
-         <column autoUpdated="false" digits="0" id="8" name="total_time" nullable="true" remarks="" size="10" type="int4"/>
-         <column autoUpdated="false" digits="0" id="9" name="prep_time" nullable="true" remarks="" size="10" type="int4"/>
-         <column autoUpdated="false" digits="0" id="10" name="cook_time" nullable="true" remarks="" size="10" type="int4"/>
+         <column autoUpdated="false" digits="0" id="1" name="category_id" nullable="true" remarks="" size="19" type="int8">
+            <parent column="id" foreignKey="recipes_category_id_fkey" implied="false" onDeleteCascade="false" table="categories"/>
+         </column>
+         <column autoUpdated="false" digits="0" id="2" name="name" nullable="true" remarks="" size="2147483647" type="text"/>
+         <column autoUpdated="false" digits="0" id="3" name="description" nullable="true" remarks="" size="2147483647" type="text"/>
+         <column autoUpdated="false" digits="0" id="4" name="url" nullable="true" remarks="" size="2147483647" type="text"/>
+         <column autoUpdated="false" digits="0" id="5" name="image" nullable="true" remarks="" size="2147483647" type="text"/>
+         <column autoUpdated="false" digits="0" id="6" name="source" nullable="true" remarks="" size="2147483647" type="text"/>
+         <column autoUpdated="false" digits="0" id="7" name="date_published" nullable="true" remarks="" size="13" type="date"/>
+         <column autoUpdated="false" digits="0" id="8" name="recipeyield" nullable="true" remarks="" size="10" type="int4"/>
+         <column autoUpdated="false" digits="0" id="9" name="total_time" nullable="true" remarks="" size="10" type="int4"/>
+         <column autoUpdated="false" digits="0" id="10" name="prep_time" nullable="true" remarks="" size="10" type="int4"/>
+         <column autoUpdated="false" digits="0" id="11" name="cook_time" nullable="true" remarks="" size="10" type="int4"/>
          <primaryKey column="id" sequenceNumberInPK="1"/>
          <index name="recipes_pkey" unique="true">
             <column ascending="true" name="id"/>
          </index>
       </table>
-      <table name="recipes_ingredients" numRows="1" remarks="" schema="public" type="TABLE">
+      <table name="recipes_ingredients" numRows="903294" remarks="" schema="public" type="TABLE">
          <column autoUpdated="true" defaultValue="nextval('recipes_ingredients_id_seq'::regclass)" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="bigserial"/>
          <column autoUpdated="false" digits="0" id="1" name="recipe_id" nullable="false" remarks="" size="19" type="int8">
             <parent column="id" foreignKey="recipes_ingredients_recipe_id_fkey" implied="false" onDeleteCascade="false" table="recipes"/>

@@ -1,6 +1,6 @@
 // dot 2.26.3 on Linux 3.8.0-33-generic
 // SchemaSpy rev 590
-digraph "largeRelationshipsDiagram" {
+digraph "twoDegreesRelationshipsDiagram" {
   graph [
     rankdir="RL"
     bgcolor="#f7f7f7"
@@ -19,15 +19,18 @@ digraph "largeRelationshipsDiagram" {
   edge [
     arrowsize="0.8"
   ];
+  "recipes":"category_id":w -> "categories":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "recipes_ingredients":"ingredient_id":w -> "ingredients":"id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "recipes_ingredients":"quantity_id":w -> "quantities":"id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "recipes_ingredients":"recipe_id":w -> "recipes":"id":e [arrowhead=none dir=back arrowtail=crowodot];
   "categories" [
     label=<
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3" BGCOLOR="#9bab96" ALIGN="CENTER">categories</TD></TR>
-      <TR><TD PORT="id" COLSPAN="3" BGCOLOR="#bed1b8" ALIGN="LEFT">id</TD></TR>
-      <TR><TD PORT="name" COLSPAN="3" ALIGN="LEFT">name</TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
       <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">  </TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">98 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 &gt;</TD></TR>
     </TABLE>>
-    URL="tables/categories.html"
+    URL="categories.html"
     tooltip="categories"
   ];
   "ingredients" [
@@ -38,7 +41,7 @@ digraph "largeRelationshipsDiagram" {
       <TR><TD PORT="name" COLSPAN="3" ALIGN="LEFT">name</TD></TR>
       <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">  </TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">99,434 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 &gt;</TD></TR>
     </TABLE>>
-    URL="tables/ingredients.html"
+    URL="ingredients.html"
     tooltip="ingredients"
   ];
   "quantities" [
@@ -49,7 +52,7 @@ digraph "largeRelationshipsDiagram" {
       <TR><TD PORT="name" COLSPAN="3" ALIGN="LEFT">name</TD></TR>
       <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">  </TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">3,487 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 &gt;</TD></TR>
     </TABLE>>
-    URL="tables/quantities.html"
+    URL="quantities.html"
     tooltip="quantities"
   ];
   "recipes" [
@@ -70,25 +73,21 @@ digraph "largeRelationshipsDiagram" {
       <TR><TD PORT="cook_time" COLSPAN="3" ALIGN="LEFT">cook_time</TD></TR>
       <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">150,205 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 &gt;</TD></TR>
     </TABLE>>
-    URL="tables/recipes.html"
+    URL="recipes.html"
     tooltip="recipes"
   ];
   "recipes_ingredients" [
     label=<
-    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+    <TABLE BORDER="2" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3" BGCOLOR="#9bab96" ALIGN="CENTER">recipes_ingredients</TD></TR>
-      <TR><TD PORT="id" COLSPAN="3" BGCOLOR="#bed1b8" ALIGN="LEFT">id</TD></TR>
-      <TR><TD PORT="recipe_id" COLSPAN="3" ALIGN="LEFT">recipe_id</TD></TR>
-      <TR><TD PORT="ingredient_id" COLSPAN="3" ALIGN="LEFT">ingredient_id</TD></TR>
-      <TR><TD PORT="quantity_id" COLSPAN="3" ALIGN="LEFT">quantity_id</TD></TR>
-      <TR><TD PORT="quantity_count" COLSPAN="3" ALIGN="LEFT">quantity_count</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">903,294 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD></TR>
+      <TR><TD PORT="id" COLSPAN="2" BGCOLOR="#bed1b8" ALIGN="LEFT">id</TD><TD PORT="id.type" ALIGN="LEFT">bigserial[19]</TD></TR>
+      <TR><TD PORT="recipe_id" COLSPAN="2" ALIGN="LEFT">recipe_id</TD><TD PORT="recipe_id.type" ALIGN="LEFT">int8[19]</TD></TR>
+      <TR><TD PORT="ingredient_id" COLSPAN="2" ALIGN="LEFT">ingredient_id</TD><TD PORT="ingredient_id.type" ALIGN="LEFT">int8[19]</TD></TR>
+      <TR><TD PORT="quantity_id" COLSPAN="2" ALIGN="LEFT">quantity_id</TD><TD PORT="quantity_id.type" ALIGN="LEFT">int8[19]</TD></TR>
+      <TR><TD PORT="quantity_count" COLSPAN="2" ALIGN="LEFT">quantity_count</TD><TD PORT="quantity_count.type" ALIGN="LEFT">float8[17,17]</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">903,294 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">0 &gt;</TD></TR>
     </TABLE>>
-    URL="tables/recipes_ingredients.html"
+    URL="recipes_ingredients.html"
     tooltip="recipes_ingredients"
   ];
-  "recipes":"category_id":w -> "categories":"id":e [arrowhead=none dir=back arrowtail=crowodot];
-  "recipes_ingredients":"ingredient_id":w -> "ingredients":"id":e [arrowhead=none dir=back arrowtail=crowodot];
-  "recipes_ingredients":"quantity_id":w -> "quantities":"id":e [arrowhead=none dir=back arrowtail=crowodot];
-  "recipes_ingredients":"recipe_id":w -> "recipes":"id":e [arrowhead=none dir=back arrowtail=crowodot];
 }

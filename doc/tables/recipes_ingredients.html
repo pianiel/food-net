@@ -100,7 +100,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 </tr>
 </thead>
 <tbody valign='top'>
-<tr class='even'>
+<tr class='odd'>
  <td class='primaryKey' title='Primary Key'>id</td>
  <td class='detail'>bigserial</td>
  <td class='detail' align='right'>19</td>
@@ -111,7 +111,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'></td>
 </tr>
-<tr class='odd'>
+<tr class='even'>
  <td class='detail'>recipe_id</td>
  <td class='detail'>int8</td>
  <td class='detail' align='right'>19</td>
@@ -121,7 +121,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'></td>
  <td class='detail'>
   <table border='0' width='100%' cellspacing='0' cellpadding='0'>
-   <tr class='relative odd' valign='top'>
+   <tr class='relative even' valign='top'>
     <td class='relatedTable detail' title="recipes_ingredients.recipe_id refs recipes.id via recipes_ingredients_recipe_id_fkey"><a href='recipes.html'>recipes</a><span class='relatedKey'>.id</span>
     </td>
     <td class='constraint detail'>recipes_ingredients_recipe_id_fkey<span title='Restrict delete:
@@ -131,7 +131,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  </td>
  <td class='comment detail'></td>
 </tr>
-<tr class='even'>
+<tr class='odd'>
  <td class='detail'>ingredient_id</td>
  <td class='detail'>int8</td>
  <td class='detail' align='right'>19</td>
@@ -141,7 +141,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'></td>
  <td class='detail'>
   <table border='0' width='100%' cellspacing='0' cellpadding='0'>
-   <tr class='relative even' valign='top'>
+   <tr class='relative odd' valign='top'>
     <td class='relatedTable detail' title="recipes_ingredients.ingredient_id refs ingredients.id via recipes_ingredients_ingredient_id_fkey"><a href='ingredients.html'>ingredients</a><span class='relatedKey'>.id</span>
     </td>
     <td class='constraint detail'>recipes_ingredients_ingredient_id_fkey<span title='Restrict delete:
@@ -151,7 +151,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  </td>
  <td class='comment detail'></td>
 </tr>
-<tr class='odd'>
+<tr class='even'>
  <td class='detail'>quantity_id</td>
  <td class='detail'>int8</td>
  <td class='detail' align='right'>19</td>
@@ -161,7 +161,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'></td>
  <td class='detail'>
   <table border='0' width='100%' cellspacing='0' cellpadding='0'>
-   <tr class='relative odd' valign='top'>
+   <tr class='relative even' valign='top'>
     <td class='relatedTable detail' title="recipes_ingredients.quantity_id refs quantities.id via recipes_ingredients_quantity_id_fkey"><a href='quantities.html'>quantities</a><span class='relatedKey'>.id</span>
     </td>
     <td class='constraint detail'>recipes_ingredients_quantity_id_fkey<span title='Restrict delete:
@@ -171,7 +171,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  </td>
  <td class='comment detail'></td>
 </tr>
-<tr class='even'>
+<tr class='odd'>
  <td class='detail'>quantity_count</td>
  <td class='detail'>float8</td>
  <td class='detail' align='right'>17,17</td>
@@ -183,7 +183,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='comment detail'></td>
 </tr>
 </table>
-<p title='5 columns'>Table contained 1 rows at Tue Oct 22 00:34 CEST 2013<p/>
+<p title='5 columns'>Table contained 903,294 rows at Tue Nov 12 00:23 CET 2013<p/>
 </td></tr></table>
 <div class='indent'>
 <b>Indexes:</b>
@@ -206,13 +206,24 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 </table>
 </div>
 <table width='100%' border='0'><tr><td class='container'>
-<br><form action='get'><b>Close relationships:</b></form><map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="recipes_ingredients.html" title="recipes_ingredients" alt="" coords="205,280,421,456">
-<area shape="rect" id="node3" href="ingredients.html" title="ingredients" alt="" coords="13,329,152,431">
-<area shape="rect" id="node5" href="quantities.html" title="quantities" alt="" coords="23,447,143,550">
-<area shape="rect" id="node7" href="recipes.html" title="recipes" alt="" coords="5,5,160,312">
+<br><form action='get'><b>Close relationships</b><span class='degrees' id='degrees' title='Detail diminishes with increased separation from recipes_ingredients'>
+&nbsp;within <label for='oneDegree'><input type='radio' name='degrees' id='oneDegree' checked>one</label>  <label for='twoDegrees'><input type='radio' name='degrees' id='twoDegrees'>two degrees</label> of separation</span><b>:</b></form>
+<map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
+<area shape="rect" id="node1" href="recipes_ingredients.html" title="recipes_ingredients" alt="" coords="243,301,504,477">
+<area shape="rect" id="node3" href="ingredients.html" title="ingredients" alt="" coords="19,350,184,453">
+<area shape="rect" id="node5" href="quantities.html" title="quantities" alt="" coords="24,469,179,571">
+<area shape="rect" id="node7" href="recipes.html" title="recipes" alt="" coords="7,5,196,334">
 </map>
   <a name='diagram'><img id='oneDegreeImg' src='../diagrams/recipes_ingredients.1degree.png' usemap='#oneDegreeRelationshipsDiagram' class='diagram' border='0' alt='' align='left'></a>
+<map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
+<area shape="rect" id="node1" href="recipes.html" title="recipes" alt="" coords="189,5,379,334">
+<area shape="rect" id="node3" href="categories.html" title="categories" alt="" coords="7,27,143,107">
+<area shape="rect" id="node4" href="recipes_ingredients.html" title="recipes_ingredients" alt="" coords="425,301,687,477">
+<area shape="rect" id="node6" href="ingredients.html" title="ingredients" alt="" coords="201,350,367,453">
+<area shape="rect" id="node8" href="quantities.html" title="quantities" alt="" coords="207,469,361,571">
+</map>
+
+  <a name='diagram'><img id='twoDegreesImg' src='../diagrams/recipes_ingredients.2degrees.png' usemap='#twoDegreesRelationshipsDiagram' class='diagram' border='0' alt='' align='left'></a>
 </td></tr></table>
 </div>
 </body>

@@ -31,7 +31,7 @@
 <div class='indent'>
 <table width='100%'>
 <tr><td class='container' valign='bottom'><b>
-3 Foreign Key Constraints:</b>
+4 Foreign Key Constraints:</b>
 </td><td class='container' align='right'>
 <table>
   <tr><td class='container' align='right' valign='top'><a href='http://sourceforge.net' target='_blank'><img src='http://sourceforge.net/sflogo.php?group_id=137197&amp;type=1' alt='SourceForge.net' border='0' height='31' width='88'></a></td></tr>
@@ -71,20 +71,27 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 </thead>
 <tbody>
   <tr class='even'>
+  <td class='detail'>recipes_category_id_fkey</td>
+  <td class='detail'><a href='tables/recipes.html'>recipes</a>.category_id</td>
+  <td class='detail'><a href='tables/categories.html'>categories</a>.id</td>
+  <td class='detail'><span title='Restrict delete:
+ Parent cannot be deleted if children exist'>Restrict delete&nbsp;</span></td>
+ </tr>
+  <tr class='odd'>
   <td class='detail'>recipes_ingredients_ingredient_id_fkey</td>
   <td class='detail'><a href='tables/recipes_ingredients.html'>recipes_ingredients</a>.ingredient_id</td>
   <td class='detail'><a href='tables/ingredients.html'>ingredients</a>.id</td>
   <td class='detail'><span title='Restrict delete:
  Parent cannot be deleted if children exist'>Restrict delete&nbsp;</span></td>
  </tr>
-  <tr class='odd'>
+  <tr class='even'>
   <td class='detail'>recipes_ingredients_quantity_id_fkey</td>
   <td class='detail'><a href='tables/recipes_ingredients.html'>recipes_ingredients</a>.quantity_id</td>
   <td class='detail'><a href='tables/quantities.html'>quantities</a>.id</td>
   <td class='detail'><span title='Restrict delete:
  Parent cannot be deleted if children exist'>Restrict delete&nbsp;</span></td>
  </tr>
-  <tr class='even'>
+  <tr class='odd'>
   <td class='detail'>recipes_ingredients_recipe_id_fkey</td>
   <td class='detail'><a href='tables/recipes_ingredients.html'>recipes_ingredients</a>.recipe_id</td>
   <td class='detail'><a href='tables/recipes.html'>recipes</a>.id</td>
