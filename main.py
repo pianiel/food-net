@@ -30,17 +30,17 @@ def fetchjson():
 
 def depopulate():
     metadata = MetaData(db)
-    trans = conn.begin()
-    try:
-        for tablename in ['recipes_ingredients', 'recipes', 'ingredients', 'quantities', 'categories']:
+    for tablename in ['recipes_ingredients', 'recipes', 'ingredients', 'quantities', 'categories']:
+        try:
+            trans = conn.begin()
             table = Table(tablename, metadata, autoload=True)
             # delete = table.delete()
             # delete.execute()
             conn.execute(table.delete())
-        trans.commit()
-    except:
-        trans.rollback()
-        raise
+            trans.commit()
+        except:
+            trans.rollback()
+            raise
 
 def parse_single_time(input):
     unit = input[len(input)-1]
@@ -229,4 +229,5 @@ if __name__ == '__main__':
     depopulate()
     print "populating..."
     populate()
+    # conn.close()
 
