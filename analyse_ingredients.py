@@ -88,7 +88,7 @@ def unify_units(unit):
         unit = u'dash'
     elif unit in ['cup', 'cups']:
         unit = u'cup'
-    elif unit in ['pound', 'pounds']:
+    elif unit in ['lb', 'lbs', 'lbm', 'pound', 'pounds']:
         unit = u'pound'
     return unit
 
