@@ -5,6 +5,7 @@ import random
 import json
 import re
 import string
+import copy
 
 from collections import Counter
 
@@ -92,7 +93,16 @@ def unify_units(unit):
         unit = u'pound'
     return unit
 
-def parse_ing_list(ingredients):
+stoplist = ['of', 'and', 'or', 'zo', 'c', 'in', 'f', 'to', 'as', 'to', 'one', 'beaten', 'weight', 'oz', 'white', 'dry', 'raw', 'hot', 'old', 'fresh', 'jar', 'de', 'so', 'all', 'me', 'can', 'round', 'fine', 'extra','pie','sauce','pack','powder','cut','fluid','thin','gin','pot','rum','ounces','for','tin','if','mix','cube','fat','into','the','ice','up','cans','quart','quarts','finely','stock','cubes', 'cream', 'ground','piece','pieces','baking','juice','seeds','leaf','leaves','nut','nuts','thick','more','peas','bag','thinly','green','pan', 'taste', 'skin', 'each', 'cup', 'pinches', 'half', 'with', 'paste', 'slice','cold', 'spice','frozen', 'whole','chile', 'plus', 'dice', 'top', 'chunks', 'syrup', 'bar','package', 'small','stick', 'bone', 'fish', 'not','shortening', 'use','crust', 'size', 'off', 'seasoning', 'free', 'lb', 'from', 'ale','amp','plain', 'pod','strips', 'total', 'large', 'wedge', 'leg', 'ripe','lightly', 'dish','optional', 'fruit', 'fruits','stem', 'jam', 'peel', 'port', 'stalk', 'shell', 'flower', 'torn', 'tub', 'fillet', 'breast', 'meat','roughly','garni','salsa', 'length', 'serve', 'head','long', 'only','room temperature','well','rounds', 'brown', 'bunch', 'meal', 'squash', 'beet', 'yellow', 'coarsely', 'ones', 'dates', 'box', 'heart', u'\u215e ounces weight','loaf', 'rings', 'less', 'liquid', 'ready', 'container', 'blend', 'then','cod','over', 'lean', 'sheet', 'solids', 'hard', 'square', 'spoon', 'ends', 'bottle', 'wide', 'halves', 'bits','diameter','recipe','ball','extract', 'thighs','packet','on', 'but', 'pin','see', 'soy', 'out', 'cake', 'vegetable', 'edges','fillets', 'sticks', 'halfandhalf', 'grain', 'stems', 'rib', 'cups', 'at room temperature','hearts','broken','bulb','such as','split','dressing','rind','breasts', 'medium','lengths','lengthwise','jars','pit','greens','freshly','liver', 'chops','smoke', 'squares', 'oven', 'flakes', 'neck', 'balls', 'wings', 'sheets', 'thickly', 'serving', 'pns', 'legs', 'heads', 'tops', 'tails', 'tins', 'deep', 'dog', 'tips', 'crusts', 'a jar', 'bars', 'thickness', 'be','slices','heat','you','soup','light','bun','parts','note','tip','jus','bones','loin','roast','cob','lengthways','mince','bags','pound','block','clean','preferably','until','coating','tsp','bes','pea','soft','left','like','prefer','below','palm','base','slightly','cn','\u2013','bulbs','triple sec','core','about','rest','segments','skins','using','organic','filling','pans','bitesize','cooking','loosely','person','excess','fat','spread','spoons','both','bake','colour','sole','dogs','fingers','very','twist','flowers','sides','when','intact','fork','is','fine','decorate','content','range','good','spicy','portion','above','snow','at','left','bottles']
+
+
+def startswith (name, stoplist):
+    for string in stoplist:
+        if name.startswith(string+' ') or name == string :
+            return True
+    return False
+
+def parse_ing_list(current_results, ingredients):
     results = []
     for ing in ingredients:
         ing = ing.lower()
@@ -115,8 +125,10 @@ def parse_ing_list(ingredients):
             continue
         last_quantity = full_name.split()[0]
         name = full_name[len(last_quantity):].strip()
-        if name.startswith('of'):
-            name = name.replace('of', '').strip()
+        while startswith(name, stoplist):
+            for word in stoplist:
+                if name.startswith(word+' ') or name == word:
+                    name = name.replace(word, '').strip()
         if len(name) == 0:
             continue
         #print ing
@@ -142,7 +154,7 @@ def parse_ingredients(ings):
     result = []
     for ing in ings:
         ing_list = [i.strip() for i in ing.split('\n')]
-        result.extend(parse_ing_list(ing_list))
+        result.extend(parse_ing_list(result, ing_list))
     return result
 
 def main():
@@ -151,17 +163,37 @@ def main():
     result = parse_ingredients(ings)
     grouped = zip(*result)
     # ings, quants, cnts = grouped
-    print 'Total of', len(grouped[0]), 'ingredients found'
-    for group in grouped:
-        print len(set(group)), 'unique values'
-        cnt = Counter(group)
-        for what in cnt.most_common(15):
-            print what
-        print '###'
-    # for ing, quant, cnt in result:
-    #     # print (ing, quant, cnt)
-    #     print quant.encode('utf-8')
+    print 'Total of', len(grouped[0]), 'ingredients found,'
 
+    unique_ingredients = set(grouped[0])
+    cntr = Counter(grouped[0])
+    print len(unique_ingredients), 'unique ones'
+    #This will take a loooot of time [ O((100 000)^2) ]
+    mappings = {}
+    for what in cntr.most_common(len(unique_ingredients)/10): # we need a constant here because otherwise we get rubbish ingredient as the most popular one...
+        n1 = what [0]
+        for n2 in unique_ingredients:
+            if n1 in n2 and n2 != n1: #only one mapping per ingredient, but what can we do? :<
+                if n2 not in mappings or (n2 in mappings and len(n1) < len (mappings[n2])):
+                    mappings [n2] = n1
+    print 'Found', len(mappings), 'mappings'
+
+    new_result = []
+    for ing in result:
+        if ing[0] in mappings:
+            #print 'Adding', mappings[ing[0]], 'instead of', ing[0]
+            new_result.append((mappings[ing[0]], ing[1], ing[2]))
+        else:
+            new_result.append((ing[0], ing[1], ing[2]))
+    grouped = zip(*new_result)
+
+    #for group in grouped:
+    group = grouped[0]
+    print len(set(group)), 'unique values'
+    cnt = Counter(group)
+    for what in cnt.most_common(500):
+        print what
+    print '###'
 
 if __name__ == '__main__':
     main()
