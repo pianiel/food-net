@@ -7,11 +7,16 @@ import re
 import string
 import copy
 
+# import pickle
+import cPickle as pickle
+
 from collections import Counter
 
 datafile = "recipeitems-latest.json"
 #datafile = "debug20.json"
-#datafile = "debug300.json"
+# datafile = "debug300.json"
+
+MAPPINGS_FILENAME = "mappings.dat"
 
 def fetchjson():
     with open(datafile) as f:
@@ -157,6 +162,15 @@ def parse_ingredients(ings):
         result.extend(parse_ing_list(result, ing_list))
     return result
 
+def save_obj_to_file(obj, filename):
+    with open(filename, 'wb') as output:
+        pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
+
+def load_obj_from_file(filename):
+    with open(filename, 'rb') as output:
+        obj = pickle.load(output)
+        return obj
+
 def main():
     lines = fetchjson()
     ings = [line['ingredients'] for line in lines]
@@ -177,6 +191,9 @@ def main():
                 if n2 not in mappings or (n2 in mappings and len(n1) < len (mappings[n2])):
                     mappings [n2] = n1
     print 'Found', len(mappings), 'mappings'
+
+    print 'Dumping mappings to:', MAPPINGS_FILENAME
+    save_obj_to_file(mappings, MAPPINGS_FILENAME)
 
     new_result = []
     for ing in result:

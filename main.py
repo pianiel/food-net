@@ -17,6 +17,8 @@ host = 'localhost'
 dbname = 'food'
 dbstring = 'postgresql://' + user + ':' + password + '@' + host + '/' + dbname
 
+mappings = load_obj_from_file(MAPPINGS_FILENAME)
+
 db = create_engine(dbstring, execution_options={'autocommit':'false'})
 
 conn = db.connect()
@@ -105,7 +107,20 @@ def run(stmt):
 
 
 def parse_ing_list(ingredients):
-    return parse_ingredients([ingredients])
+    result = parse_ingredients([ingredients])
+    if mappings is None:
+        return result
+    mapped_result = []
+    for ing in result:
+        if ing[0] in mappings:
+            #print 'Adding', mappings[ing[0]], 'instead of', ing[0]
+            mapped_result.append((mappings[ing[0]], ing[1], ing[2]))
+        else:
+            mapped_result.append((ing[0], ing[1], ing[2]))
+    # print '###'
+    # print 'result:', result
+    # print 'mapped_result:', mapped_result
+    return mapped_result
     #ing_list = [ing.strip() for ing in ingredients.split('\n')]
     # return list of tuples: [("flour", "cup", 1.5), ("water", "oz", 20.0)]
     #return [(ingredients, 'glass', 1.0)]
