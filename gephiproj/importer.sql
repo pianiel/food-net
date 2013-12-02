@@ -1,6 +1,11 @@
 -- nodes query 
 select id, name as label from ingredients;
 
+--nodes appearing in more than 3 recipes
+select s.id, name as label, count from 
+(select ingredient_id as id, count(ingredient_id) as count from recipes_ingredients group by ingredient_id) as s 
+join ingredients on s.id = ingredients.id where count > 3;
+
 -- edges query
 select distinct 
 a.ingredient_id as source, 
