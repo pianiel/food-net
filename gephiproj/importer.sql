@@ -17,6 +17,17 @@ and b.ingredient_id in
 (select s.id from (select ingredient_id as id, count(ingredient_id) as count from recipes_ingredients group by ingredient_id) as s join ingredients on s.id = ingredients.id where count > 10) 
 group by source, target ) as s where s.weight > 20 order by weight desc, source, target;
 
+-- edges with names instead of ids
+select i.name, j.name, weight from (select source, target, weight from 
+( select distinct  a.ingredient_id as source,  b.ingredient_id as target,  count(a.ingredient_id) as weight
+from recipes_ingredients as a join recipes_ingredients as b  using (recipe_id) 
+where a.ingredient_id < b.ingredient_id 
+and a.ingredient_id in 
+(select s.id from (select ingredient_id as id, count(ingredient_id) as count from recipes_ingredients group by ingredient_id) as s join ingredients on s.id = ingredients.id where count > 10) 
+and b.ingredient_id in 
+(select s.id from (select ingredient_id as id, count(ingredient_id) as count from recipes_ingredients group by ingredient_id) as s join ingredients on s.id = ingredients.id where count > 10) 
+group by source, target ) as s where s.weight > 20 order by weight desc, source, target) as s join ingredients as i on s.source = i.id join ingredients as j on s.target = j.id;
+
 -- edges query
 select distinct 
 a.ingredient_id as source, 
