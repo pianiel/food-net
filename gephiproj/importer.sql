@@ -18,7 +18,7 @@ and b.ingredient_id in
 group by source, target ) as s where s.weight > 20 order by weight desc, source, target;
 
 -- edges with names instead of ids
-select i.name, j.name, weight from (select source, target, weight from 
+select replace(i.name, ' ', '_'), replace(j.name, ' ', '_') weight from (select source, target, weight from 
 ( select distinct  a.ingredient_id as source,  b.ingredient_id as target,  count(a.ingredient_id) as weight
 from recipes_ingredients as a join recipes_ingredients as b  using (recipe_id) 
 where a.ingredient_id < b.ingredient_id 
